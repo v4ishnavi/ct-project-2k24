@@ -1,5 +1,5 @@
 clc;clear;close all;
-
+%A/D Conversion
 % [audio1, fs] = audioread('project.wav');
 
 %This is the A/D converter, completely copied honestly
@@ -9,27 +9,24 @@ clc;clear;close all;
 % audio_binary = dec2bin(typecast(audio_normalized(:), 'uint16'), 16); 
 % binary_vector = audio_binary(:)';
 
-
+%------------------------------------------------------------------------------
 % l = length(binary_vector);
 k = 8; 
 m = 4; %mapping to 4 bits 
 
 %This section of the code encodes the binary vector using 4-PAM 
 % symbols_vector = fourpammapA(binary_vector);
-symbols_vector = [1 1 1 3 3 -3 -1 1 1 1 3 3 -3 -1 1 1 1 3 3 -3 -1];
 
+symbols_vector = [1 1 1 3 3 -3 -1 1 1 1 3 3 -3 -1 1 1 1 3 3 -3 -1];
+%-------------------------------------------------------------------------------
+%LINE CODING 
 symbols_vector_up = zeros(1,m*k);
 for j = 1:k
     symbols_vector_up(j + (j-1)*(m-1)) = symbols_vector(j);
 end %you could have just used upsample, but okie
-
-%and that's it hehe
-
-% figure;
-% stem(1:l/2,symbols_vector);
-
 % Rectangular pulse
 p1 = [ones(1,k/2)];
+
 %raised cosine pulse 
 a = 0.5;
 [p2, ~] = raised_cosine(a, 4, k/2);
@@ -43,9 +40,26 @@ plot(1:m*k, line_vector_rcos);
 hold on
 stem(1:m*k, symbols_vector_up);
 hold off
-
-%modulation part
-
+%-------------------------------------------------------------------------------------
+%MODULATION PART: here there is no doppler effect so dsb-sc
+%rectangular encoded: 
+fc = 1e6;
+len_ip = length(symbols_vector_up);
+fs = 1e4;
+t = (0:(len_ip-1)) / fs;
+carrier = cos(fc*2*pi*t);
+modulated_rect_vec = line_vector_rect.*carrier;
+modulated_rcos_vec = line_vector_rcos .* carrier; 
+figure;
+subplot(4,1,1)
+plot(modulated_rect_vec);
+subplot(4,1,2)
+plot(line_vector_rect);
+subplot(4,1,3)
+plot(modulated_rcos_vec);
+subplot(4,1,4)
+plot(line_vector_rcos);
+%---------------------------------------------------------------------------------------
 %This section is just to check stuff/ ignore unless curious
 % 
 % binary_vectorA = fourpamunmapA(symbols_vector);
