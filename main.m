@@ -69,6 +69,13 @@ subplot(4,1,3)
 plot(modulated_rcos_vec);
 subplot(4,1,4)
 plot(lv_rcos_upsampled);
+
+%_---------------------------------------------------------------------
+%Channel 
+
+
+
+
 %---------------------------------------------------------------------------------------
 %This section is just to check stuff/ ignore unless curious
 % modulation failures 
