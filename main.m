@@ -45,7 +45,7 @@ line_vector_rcos = conv(symbols_vector_up, p2, 'same');
 %rectangular encoded: 
 fc = 1e6;
 len_ip = length(symbols_vector_up);
-fs = 2e6;
+fs = 44100;%rough: for now. 
 t = 0:1/fs:(len_ip-1/fs);
 carrier = cos(fc*2*pi*t);
 % ts = 1/fs;
