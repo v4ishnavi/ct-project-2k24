@@ -33,13 +33,13 @@ a = 0.5;
 
 line_vector_rect = conv(symbols_vector_up,p1,'same');
 line_vector_rcos = conv(symbols_vector_up, p2, 'same');
-% figure;
-% plot(1:m*k,line_vector_rect);
-% hold on
-% plot(1:m*k, line_vector_rcos);
-% hold on
-% stem(1:m*k, symbols_vector_up);
-% hold off
+figure;
+plot(1:m*k,line_vector_rect);
+hold on
+plot(1:m*k, line_vector_rcos);
+hold on
+stem(1:m*k, symbols_vector_up);
+hold off
 %-------------------------------------------------------------------------------------
 %MODULATION PART: here there is no doppler effect so dsb-sc
 %rectangular encoded: 
@@ -50,7 +50,7 @@ t = 0:1/fs:(len_ip-1/fs);
 carrier = cos(fc*2*pi*t);
 % ts = 1/fs;
 line_vector_rect = repelem(line_vector_rect, fs);
-line_vector_rcos = repelem(line_vector_rcos, fs);
+line_vector_rcos = repelem(line_vector_rcos, fs); %i think we need to upsample this earlier
 % disp(length(line_vector_rcos)); disp(length(line_vector_rect)); disp(length(carrier));
 modulated_rect_vec = line_vector_rect.*carrier;
 modulated_rcos_vec = line_vector_rcos .* carrier; 
