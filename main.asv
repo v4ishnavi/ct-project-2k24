@@ -71,17 +71,15 @@ subplot(4,1,4)
 plot(lv_rcos_upsampled);
 
 %_---------------------------------------------------------------------
-%Channel memoryless: 
-%assume channel noise has SNR = 1 (super high) 
-channel_op_rcos = awgn(modulated_rcos_vec, 1);
-channel_op_rect = awgn(modulated_rect_vec, 1);
+%Channel memory: 
+%assume channel noise has SNR = 3
+channel_op_rcos = awgn(modulated_rcos_vec, 3);
+channel_op_rect = awgn(modulated_rect_vec, 3);
 figure; 
 subplot(2,1,1)
-plot(channel_op_rcos);
+plot(channel_op_rcos(1:100));
 subplot(2,1,2);
-plot(channel_op_rect);
-
-%channel memory: 
+plot(channel_op_rect(1:100))
 
 
 %---------------------------------------------------------------------------------------
