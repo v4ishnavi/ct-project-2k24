@@ -1,0 +1,22 @@
+function invector = fourpamunmapA(outvector)
+    l = length(outvector);
+
+    invector = "";
+        
+    for k = 0:2:l*2-1
+        if outvector(k/2 + 1) == -1
+            invector(k+1) = '0';
+            invector(k+2) = '0';
+        elseif outvector(k/2 + 1) == 1 
+            invector(k+1) = '0';
+            invector(k+2) = '1';
+        elseif outvector(k/2 + 1) == -3 
+            invector(k+1) = '1';
+            invector(k+2) = '0';
+        else
+            invector(k+1) = '1';
+            invector(k+2) = '1';
+        end
+    end
+
+end
