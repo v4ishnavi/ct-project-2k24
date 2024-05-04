@@ -46,25 +46,35 @@ hold off
 fc = 1e6;
 len_ip = length(symbols_vector_up);
 fs = 44100;%rough: for now. 
-t = 0:1/fs:(len_ip-1/fs);
-carrier = cos(fc*2*pi*t);
 % ts = 1/fs;
-line_vector_rect = repelem(line_vector_rect, fs);
-line_vector_rcos = repelem(line_vector_rcos, fs); %i think we need to upsample this using linear upsampling. 
-% disp(length(line_vector_rcos)); disp(length(line_vector_rect)); disp(length(carrier));
-modulated_rect_vec = line_vector_rect.*carrier;
-modulated_rcos_vec = line_vector_rcos .* carrier; 
+upsample_factor = fs;
+
+t = linspace(1, len_ip, len_ip * upsample_factor);
+lv_rect_upsampled = interp1(1:len_ip, line_vector_rect, t, 'linear');
+lv_rcos_upsampled = interp1(1:len_ip, line_vector_rcos, t, 'linear');
+% len_up = length(lv_rect_upsampled);
+% t = linspace(0, (len_up-1)/fs,len_up);
+
+carrier = cos(fc*2*pi*t);
+% disp(length(t)); disp(length(t));
+modulated_rect_vec = lv_rect_upsampled .* carrier;
+modulated_rcos_vec = lv_rcos_upsampled .* carrier;
+
 figure;
 subplot(4,1,1)
 plot(modulated_rect_vec);
 subplot(4,1,2)
-plot(line_vector_rect);
+plot(lv_rect_upsampled);
 subplot(4,1,3)
 plot(modulated_rcos_vec);
 subplot(4,1,4)
-plot(line_vector_rcos);
+plot(lv_rcos_upsampled);
 %---------------------------------------------------------------------------------------
 %This section is just to check stuff/ ignore unless curious
+% modulation failures 
+% line_vector_rect = repelem(line_vector_rect, fs);
+% line_vector_rcos = repelem(line_vector_rcos, fs); %i think we need to upsample this using linear upsampling. 
+% disp(length(line_vector_rcos)); disp(length(line_vector_rect)); disp(length(carrier));
 % 
 % binary_vectorA = fourpamunmapA(symbols_vector);
 % 
