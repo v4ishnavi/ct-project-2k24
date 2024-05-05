@@ -4,13 +4,13 @@ function invector = fourpamunmapA(outvector)
     invector = "";
         
     for k = 0:2:l*2-1
-        if 0 >= outvector(k/2 + 1) && outvector(k/2 + 1) > -2
-            invector(k+1) = '0';
-            invector(k+2) = '0';
-        elseif outvector(k/2 + 1) > 0 && outvector(k/2 +1) <= 2
+        if outvector(k/2 + 1) == -1
+            invector(k+1) = 0;
+            invector(k+2) = 0;
+        elseif outvector(k/2 + 1) == 1 
             invector(k+1) = '0';
             invector(k+2) = '1';
-        elseif outvector(k/2 + 1) <= -2 
+        elseif outvector(k/2 + 1) == -3 
             invector(k+1) = '1';
             invector(k+2) = '0';
         else

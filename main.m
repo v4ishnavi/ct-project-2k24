@@ -9,6 +9,7 @@ audio = audio(1:100);
 audio_normalized = int16(audio * 32767); 
 audio_binary = dec2bin(typecast(audio_normalized(:), 'uint16'), 16); 
 binary_vector = audio_binary(:)';
+% disp(binary_vector);
 
 %------------------------------------------------------------------------------
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -20,7 +21,7 @@ m = 4; %mapping to 4 bits
 
 %This section of the code encodes the binary vector using 4-PAM 
 symbols_vector = fourpammapA(binary_vector);
-disp(length(symbols_vector))
+% disp(length(symbols_vector))
 % symbols_vector = [1 1 1 3 3 -3 -1 1 1 1 3 3 -3 -1 1 1 1 3 3 -3 -1];
 
 %-------------------------------------------------------------------------------
@@ -28,7 +29,7 @@ disp(length(symbols_vector))
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                             line encoding                           %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-disp(l);
+% disp(l);
 symbols_vector_up = zeros(1,m*l/2);
 for j = 1:l/2
     symbols_vector_up(j + (j-1)*(m-1)) = symbols_vector(j);
@@ -61,7 +62,7 @@ len_ip = length(symbols_vector_up);
 t = (0:len_ip-1)/fs;
 carrier = cos(fc*2*pi*t);
 % disp(length(t)); disp(length(t));
-disp(length(line_vector_rect)); disp(length(carrier))
+% disp(length(line_vector_rect)); disp(length(carrier))
 modulated_rect_vec = line_vector_rect .* carrier;
 % modulated_rcos_vec = line_vector_rcos .* carrier;
 
@@ -83,7 +84,7 @@ plot(t,modulated_rect_vec);
 % Channel memoryless: 
 % assume channel noise has SNR = 3
 % channel_op_rcos = awgn(modulated_rcos_vec, 1);
-channel_op_rect = awgn(modulated_rect_vec, 3); 
+channel_op_rect = awgn(modulated_rect_vec, 1); 
 figure; 
 % subplot(2,1,1)
 % plot(channel_op_rcos);
@@ -108,9 +109,25 @@ plot(t, demod_rect_vec);
 %%%                             line decoding                           %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+line_decoded_rect_vec = conv(demod_rect_vec, p1, 'same');
+line_decoded_rect_vec = 3*line_decoded_rect_vec/max(line_decoded_rect_vec);
+figure;
+plot(line_decoded_rect_vec)
 
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                            4PAM decoding                            %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+decoded_rect = (line_decoded_rect_vec);
+decoded_downsample = downsample(decoded_rect, m);
+final_output = fourpamunmapA(decoded_downsample);
+count = 0; 
+disp(length(binary_vector)); disp(length(final_output))
+for p = 1: length(binary_vector)
+    if binary_vector(p) == final_output(p)
+        count = count + 1;
+    end
+end
+disp(count/length(binary_vector))
 %------------------------------------------------------------------------------------
 %----------------------------------------------------------------------------------------
 %This section is just to check stuff/ ignore unless curious
