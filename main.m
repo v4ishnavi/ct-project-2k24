@@ -11,6 +11,9 @@ audio_binary = dec2bin(typecast(audio_normalized(:), 'uint16'), 16);
 binary_vector = audio_binary(:)';
 
 %------------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                             encoding                                %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 l = length(binary_vector);
 k = 8; 
 m = 4; %mapping to 4 bits 
@@ -19,8 +22,12 @@ m = 4; %mapping to 4 bits
 symbols_vector = fourpammapA(binary_vector);
 disp(length(symbols_vector))
 % symbols_vector = [1 1 1 3 3 -3 -1 1 1 1 3 3 -3 -1 1 1 1 3 3 -3 -1];
+
 %-------------------------------------------------------------------------------
-%LINE CODING 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                             line encoding                           %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 disp(l);
 symbols_vector_up = zeros(1,m*l/2);
 for j = 1:l/2
@@ -43,13 +50,15 @@ line_vector_rcos = conv(symbols_vector_up, p2, 'same');
 % stem(1:m*k, symbols_vector_up);
 % hold off
 %-------------------------------------------------------------------------------------
-%MODULATION PART: here there is no doppler effect so dsb-sc
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                             modulation                              %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %rectangular encoded: 
- fc = 1e4;
+ fc = 1e6;
 len_ip = length(symbols_vector_up); 
 
 t = (0:len_ip-1)/fs;
-% carrier = cos(fc*2*pi*(1:len_ip));
 carrier = cos(fc*2*pi*t);
 % disp(length(t)); disp(length(t));
 disp(length(line_vector_rect)); disp(length(carrier))
@@ -59,27 +68,51 @@ modulated_rect_vec = line_vector_rect .* carrier;
 figure;
 plot(t,modulated_rect_vec);
 
-figure; 
-subplot(2,1,1)
-stem(1:length(fft(line_vector_rect)),abs(fft(line_vector_rect)))
-subplot(2,1,2)
-stem(1:length(fft(modulated_rect_vec)), abs(fft(modulated_rect_vec)))
+% figure; 
+% subplot(2,1,1)
+% stem(1:length(fft(line_vector_rect)),abs(fft(line_vector_rect)))
+% subplot(2,1,2)
+% stem(1:length(fft(modulated_rect_vec)), abs(fft(modulated_rect_vec)))
 
 %_---------------------------------------------------------------------
-%Channel memoryless: 
-%assume channel noise has SNR = 1 (super high) 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                 channel                             %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Channel memoryless: 
+% assume channel noise has SNR = 3
 % channel_op_rcos = awgn(modulated_rcos_vec, 1);
-% channel_op_rect = awgn(modulated_rect_vec, 1);
-% figure; 
+channel_op_rect = awgn(modulated_rect_vec, 3); 
+figure; 
 % subplot(2,1,1)
 % plot(channel_op_rcos);
 % subplot(2,1,2);
-% plot(channel_op_rect);
+plot(channel_op_rect);
 
 %channel memory: 
 
 
 %---------------------------------------------------------------------------------------
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                             demodulation                            %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+demod_rect_vec = channel_op_rect.*carrier;
+figure;
+plot(t, demod_rect_vec);
+
+%----------------------------------------------------------------------------------
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                             line decoding                           %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%------------------------------------------------------------------------------------
+%----------------------------------------------------------------------------------------
 %This section is just to check stuff/ ignore unless curious
 % plot(modulated_rect_vec);
 % hold off;

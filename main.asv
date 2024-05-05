@@ -49,7 +49,6 @@ line_vector_rcos = conv(symbols_vector_up, p2, 'same');
 len_ip = length(symbols_vector_up); 
 
 t = (0:len_ip-1)/fs;
-% carrier = cos(fc*2*pi*(1:len_ip));
 carrier = cos(fc*2*pi*t);
 % disp(length(t)); disp(length(t));
 disp(length(line_vector_rect)); disp(length(carrier))
@@ -57,36 +56,65 @@ modulated_rect_vec = line_vector_rect .* carrier;
 % modulated_rcos_vec = line_vector_rcos .* carrier;
 
 figure;
-% subplot(2,1,1)
-% plot(modulated_rcos_vec);
-% subplot(2,1,2)
-% hold on;
-% plot(line_vector_rect);
 plot(t,modulated_rect_vec);
-% plot(modulated_rect_vec);
-% hold off;
-figure; 
-subplot(2,1,1)
-stem(1:length(fft(line_vector_rect)),abs(fft(line_vector_rect)))
-subplot(2,1,2)
-stem(1:length(fft(modulated_rect_vec)), abs(fft(modulated_rect_vec)))
+
+% figure; 
+% subplot(2,1,1)
+% stem(1:length(fft(line_vector_rect)),abs(fft(line_vector_rect)))
+% subplot(2,1,2)
+% stem(1:length(fft(modulated_rect_vec)), abs(fft(modulated_rect_vec)))
 
 %_---------------------------------------------------------------------
-%Channel memoryless: 
-%assume channel noise has SNR = 1 (super high) 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                             line decoding                           %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Channel memoryless: 
+% assume channel noise has SNR = 3
 % channel_op_rcos = awgn(modulated_rcos_vec, 1);
-% channel_op_rect = awgn(modulated_rect_vec, 1);
-% figure; 
+channel_op_rect = awgn(modulated_rect_vec, 3); 
+figure; 
 % subplot(2,1,1)
 % plot(channel_op_rcos);
 % subplot(2,1,2);
-% plot(channel_op_rect);
+plot(channel_op_rect);
 
 %channel memory: 
 
 
 %---------------------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                             demodulation                            %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+demod_rect_vec = channel_op_rect.*carrier;
+figure;
+plot(t, demod_rect_vec);
+
+%----------------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                             line decoding                           %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%------------------------------------------------------------------------------------
+%----------------------------------------------------------------------------------------
 %This section is just to check stuff/ ignore unless curious
+% plot(modulated_rect_vec);
+% hold off;
+% subplot(2,1,1)
+% plot(modulated_rcos_vec);
+% subplot(2,1,2)
+% hold on;
+% plot(line_vector_rect);
+% % ts = 1/fs;
+% upsample_factor = fs;
+% % 
+% t = 1/m:1/m:length(symbols_vector);
+% t = linspace(1, len_ip, len_ip * upsample_factor);
+% lv_rect_upsampled = interp1(1:len_ip, line_vector_rect, t, 'linear');
+% lv_rcos_upsampled = interp1(1:len_ip, line_vector_rcos, t, 'linear');
+% len_up = length(lv_rect_upsampled);
 % modulation failures 
 % line_vector_rect = repelem(line_vector_rect, fs);
 % line_vector_rcos = repelem(line_vector_rcos, fs); %i think we need to upsample this using linear upsampling. 
