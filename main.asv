@@ -82,11 +82,11 @@ modulated_rcos_vec = line_vector_rcos .* carrier;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                 channel                             %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-snr_val = 1;
+
 % Channel memoryless: 
 % assume channel noise has SNR = 3
-channel_op_rcos = awgn(modulated_rcos_vec, snr_val);
-channel_op_rect = awgn(modulated_rect_vec, snr_val); 
+channel_op_rcos = awgn(modulated_rcos_vec, 1);
+channel_op_rect = awgn(modulated_rect_vec, 1); 
 % figure; 
 % subplot(2,1,1)
 % plot(channel_op_rcos);
@@ -104,27 +104,9 @@ t_h = 0:Tb:(2*Tb);  % Covering 0 to 2Tb for two delta functions
 h = a * (t_h == 0) + (1 - a) * (t_h == b*Tb);  % Impulse response
 
 ch_m_o_rcos = conv(modulated_rcos_vec, h, 'same'); 
-chmo_rcos = awgn(ch_m_o_rcos, snr_val);
-
-ch_m_o_rect = conv(modulated_rect_vec, j, 'same');
-chmo_rect = awgn(ch_m_o_rect, snr_val);
-
-figure; 
-subplot(3,1,1);
-stem(modulated_rcos_vec);
-subplot(3,1,2);
-stem(ch_m_o_rcos);
-subplot(3,1,3);
-stem(chmo_rcos);
 
 
-figure; 
-subplot(3,1,1);
-stem(modulated_rect_vec);
-subplot(3,1,2);
-stem(ch_m_o_rect);
-subplot(3,1,3);
-stem(chmo_rect);
+
 
 %---------------------------------------------------------------------------------------
 
