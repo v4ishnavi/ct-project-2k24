@@ -5,6 +5,7 @@ clc;clear;close all;
 % This is the A/D converter, completely copied honestly
 
 audio = audio1(:,1);
+disp(length(audio));
 audio = audio(1:100);
 audio_normalized = int16(audio * 32767); 
 audio_binary = dec2bin(typecast(audio_normalized(:), 'uint16'), 16); 
@@ -44,9 +45,9 @@ a = 0.5;
 line_vector_rect = conv(symbols_vector_up,p1,'same');
 line_vector_rcos = conv(symbols_vector_up, p2, 'same');
 % figure;
-% plot(1:m*k,line_vector_rect);
+% plot(line_vector_rect);
 % hold on
-% plot(1:m*k, line_vector_rcos);
+% plot(line_vector_rcos);
 % hold on
 % stem(1:m*k, symbols_vector_up);
 % hold off
@@ -64,10 +65,11 @@ carrier = cos(fc*2*pi*t);
 % disp(length(t)); disp(length(t));
 % disp(length(line_vector_rect)); disp(length(carrier))
 modulated_rect_vec = line_vector_rect .* carrier;
-% modulated_rcos_vec = line_vector_rcos .* carrier;
+modulated_rcos_vec = line_vector_rcos .* carrier;
 
-figure;
-plot(t,modulated_rect_vec);
+% figure;
+% % plot(t,modulated_rect_vec);
+% plot(t,modulated_rcos_vec);
 
 % figure; 
 % subplot(2,1,1)
@@ -83,14 +85,14 @@ plot(t,modulated_rect_vec);
 
 % Channel memoryless: 
 % assume channel noise has SNR = 3
-% channel_op_rcos = awgn(modulated_rcos_vec, 1);
+channel_op_rcos = awgn(modulated_rcos_vec, 1);
 channel_op_rect = awgn(modulated_rect_vec, 1); 
-figure; 
+% figure; 
 % subplot(2,1,1)
 % plot(channel_op_rcos);
 % subplot(2,1,2);
-plot(channel_op_rect);
-
+% plot(channel_op_rect);
+% plot(channel_op_rcos);
 %channel memory: 
 
 
@@ -100,8 +102,10 @@ plot(channel_op_rect);
 %%%                             demodulation                            %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 demod_rect_vec = channel_op_rect.*carrier;
-figure;
-plot(t, demod_rect_vec);
+demod_rcos_vec = channel_op_rcos.*carrier; 
+% figure;
+% plot(t, demod_rect_vec);
+% plot(t, demod_rcos_vec);
 
 %----------------------------------------------------------------------------------
 
@@ -111,23 +115,37 @@ plot(t, demod_rect_vec);
 
 line_decoded_rect_vec = conv(demod_rect_vec, p1, 'same');
 line_decoded_rect_vec = 3*line_decoded_rect_vec/max(line_decoded_rect_vec);
-figure;
-plot(line_decoded_rect_vec)
+
+line_decoded_rcos_vec = conv(demod_rcos_vec, p1, 'same');
+line_decoded_rcos_vec = 3*line_decoded_rcos_vec/max(line_decoded_rcos_vec);
+% figure;
+% plot(line_decoded_rect_vec)
+% plot(line_decoded_rcos_vec);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                            4PAM decoding                            %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 decoded_rect = (line_decoded_rect_vec);
-decoded_downsample = downsample(decoded_rect, m);
-final_output = fourpamunmapA(decoded_downsample);
-count = 0; 
-disp(length(binary_vector)); disp(length(final_output))
+decoded_downsample_rect = downsample(decoded_rect, m);
+
+decoded_rcos = (line_decoded_rcos_vec);
+decoded_downsample_rcos = downsample(decoded_rcos, m);
+
+final_output_rect = fourpamunmapA(decoded_downsample_rect);
+final_output_rcos = fourpamunmapA(decoded_downsample_rcos);
+
+count_rect = 0; 
+count_rcos = 0; 
+disp(length(binary_vector)); disp(length(final_output_rcos))
 for p = 1: length(binary_vector)
-    if binary_vector(p) == final_output(p)
-        count = count + 1;
+    if binary_vector(p) == final_output_rect(p)
+        count_rect = count_rect + 1;
+    end
+    if binary_vector(p) == final_output_rcos(p)
+        count_rcos = count_rcos + 1;
     end
 end
-disp(count/length(binary_vector))
+disp(count_rcos/length(binary_vector))
 %------------------------------------------------------------------------------------
 %----------------------------------------------------------------------------------------
 %This section is just to check stuff/ ignore unless curious
