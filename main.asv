@@ -16,10 +16,8 @@ for i = 1:n
     
     if i == n
         infocus = 1+(i-1)*bl:length(audio2);
-        outfocus = 1+(i-1)*16*bl:16*length(audio2);
     else
         infocus = 1+(i-1)*bl:bl+(i-1)*bl;
-        outfocus = 1+(i-1)*16*bl:16*bl+(i-1)*16*bl; 
     end
     
     audio = audio2(infocus);
@@ -239,7 +237,7 @@ for i = 1:n
     disp(count_rcos/length(binary_vector));
     disp(count_rect/length(binary_vector));
 
-    final_output(outfocus) = final_output_rect;
+    final_output(infocus) = final_output_rect;
 end
 
 
