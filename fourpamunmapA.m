@@ -1,4 +1,4 @@
-function invector = fourpamunmapA(outvector,mode)
+function invector = fourpamunmapA(outvector, mode)
     l = length(outvector);
 
     invector = '';
@@ -7,19 +7,24 @@ function invector = fourpamunmapA(outvector,mode)
     else
         cutoff = [4 2.5 1.1];
     end
-    
+    cutoff = iterative_threshold(outvector, 4);
+    disp(cutoff)
+    cutoff = sort(cutoff); 
     for k = 0:2:l*2-1
-
-        if outvector(k/2 + 1) >= cutoff(1)
+        val = zeros(1, 4);
+        for i = 1:4
+        val(i) = abs(outvector(k/2 + 1) - cutoff(i));
+        end
+        if min(val) == val(4)
             invector(k+1) = '1';
             invector(k+2) = '1';
-        elseif outvector(k/2 + 1) >= cutoff(2)
+        elseif min(val) == val(3)
             invector(k+1) = '1';
             invector(k+2) = '0';
-        elseif outvector(k/2 + 1) >= cutoff(3)
+        elseif min(val) == val(2)
             invector(k+1) = '0';
             invector(k+2) = '1';
-        else
+        elseif min(val) == val(1)
             invector(k+1) = '0';
             invector(k+2) = '0';
         end

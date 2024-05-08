@@ -11,17 +11,6 @@ bl = 100000; %block length
 % n = ceil(length(audio2)/bl);
 n = 5;
 %number of fullsize block lengths
-% bl = 100;
-% n = 1;
-% op_rect_ml = zeros(1,16*n*bl); %16 for 16 binary bits?
-% op_rcos_ml = zeros(1, 16*n*bl);
-% op_rect_m_ = zeros(1, 16*n*bl);
-% op_rcos_m_ = zeros(1, 16*n*bl);
-
-% op_rect_ml = zeros(1, 16*length(audio2)); %16 for 16 binary bits?
-% op_rcos_ml = zeros(1, 16*length(audio2));
-% op_rect_m_ = zeros(1, 16*length(audio2));
-% op_rcos_m_ = zeros(1, 16*length(audio2));
 
 op_rect_ml = '';
 op_rcos_ml = '';
@@ -29,7 +18,9 @@ op_rect_m_ = '';
 op_rcos_m_ = '';
 
 for i = 1:n
-    
+    % if i~=1
+    %     break;
+    % end
     if i == n
         infocus = 1+(i-1)*bl:length(audio2);
         outfocus = 1+(i-1)*16*bl:16*length(audio2);
@@ -40,7 +31,7 @@ for i = 1:n
     % disp(infocus(1) + ":" + infocus(length(infocus)));
     % disp(outfocus(1) + ":" + outfocus(length(outfocus)));
     
-    length(outfocus)
+    % length(outfocus)
 
     audio = audio2(infocus);
     
@@ -119,11 +110,13 @@ for i = 1:n
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%                                 channel                             %%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    snr_val = 10000;
+    snr_val = 20;
     % Channel memoryless: 
     % assume channel noise has SNR = 3
-    channel_op_rcos = awgn(modulated_rcos_vec, snr_val);
-    channel_op_rect = awgn(modulated_rect_vec, snr_val); 
+    % channel_op_rcos = awgn(modulated_rcos_vec, snr_val);
+    % channel_op_rect = awgn(modulated_rect_vec, snr_val); 
+    channel_op_rcos = modulated_rcos_vec;
+    channel_op_rect = modulated_rect_vec; 
     % figure; 
     % subplot(2,1,1)
     % plot(channel_op_rcos);
@@ -144,10 +137,12 @@ for i = 1:n
     % chmo_rcos = awgn(ch_m_o_rcos, snr_val);
     
     ch_m_o_rect = conv(modulated_rect_vec, h, 'same');
-    chmo_rect = awgn(ch_m_o_rect, snr_val);
+    % chmo_rect = awgn(ch_m_o_rect, snr_val);
+    chmo_rect = ch_m_o_rect;
     
     ch_m_o_rcos = conv(modulated_rcos_vec, h, 'same');
-    chmo_rcos = awgn(ch_m_o_rcos, snr_val);
+    % chmo_rcos = awgn(ch_m_o_rcos, snr_val);
+    chmo_rcos = ch_m_o_rcos;
     
     % figure; 
     % subplot(3,1,1);
@@ -261,11 +256,14 @@ for i = 1:n
             count_rcos_mem = count_rcos_mem + 1;
         end
     end
-    disp(count_rcos_mem/length(binary_vector))
-    disp(count_rect_mem/length(binary_vector))
-    disp(count_rcos/length(binary_vector));
-    disp(count_rect/length(binary_vector));
 
+    disp('-----------------------------------------------------------------')
+    disp(['for iteration: ', num2str(i)])
+    disp(['RCOS MEMORYLESS: ' , num2str(count_rcos/length(binary_vector))])
+    disp(['RECT MEMORYLESS: ' , num2str(count_rect/length(binary_vector))])
+    disp(['RECT WITH MEMORY: ' , num2str(count_rect_mem/length(binary_vector))])
+    disp(['RCOS WITH MEMORY: ' , num2str(count_rcos_mem/length(binary_vector))])
+    disp('------------------------------------------------------------------')
     % op_rect_ml(outfocus) = final_output_rect;
     % op_rcos_ml(outfocus) = final_output_rcos;
     % op_rect_m_(outfocus) = final_output_rect_mem;
