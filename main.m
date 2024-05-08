@@ -8,14 +8,25 @@ audio2 = audio1(:,1);
 % disp(length(audio));
 
 bl = 100000; %block length
-n = floor(length(audio2)/bl); 
+% n = ceil(length(audio2)/bl);
+n = 5;
 %number of fullsize block lengths
 % bl = 100;
 % n = 1;
-op_rect_ml = zeros(1,16*n*bl); %16 for 16 binary bits?
-op_rcos_ml = zeros(1, 16*n*bl);
-op_rect_m_ = zeros(1, 16*n*bl);
-op_rcos_m_ = zeros(1, 16*n*bl);
+% op_rect_ml = zeros(1,16*n*bl); %16 for 16 binary bits?
+% op_rcos_ml = zeros(1, 16*n*bl);
+% op_rect_m_ = zeros(1, 16*n*bl);
+% op_rcos_m_ = zeros(1, 16*n*bl);
+
+% op_rect_ml = zeros(1, 16*length(audio2)); %16 for 16 binary bits?
+% op_rcos_ml = zeros(1, 16*length(audio2));
+% op_rect_m_ = zeros(1, 16*length(audio2));
+% op_rcos_m_ = zeros(1, 16*length(audio2));
+
+op_rect_ml = '';
+op_rcos_ml = '';
+op_rect_m_ = '';
+op_rcos_m_ = '';
 
 for i = 1:n
     
@@ -24,9 +35,13 @@ for i = 1:n
         outfocus = 1+(i-1)*16*bl:16*length(audio2);
     else
         infocus = 1+(i-1)*bl:bl+(i-1)*bl;
-        outfocus = 1+(i-1)*16*bl:16*bl+(i-1)*16*bl; 
+        outfocus = 1+(i-1)*16*bl:16*bl+(i-1)*16*bl;         
     end
+    % disp(infocus(1) + ":" + infocus(length(infocus)));
+    % disp(outfocus(1) + ":" + outfocus(length(outfocus)));
     
+    length(outfocus)
+
     audio = audio2(infocus);
     
     audio_normalized = int16(audio * 32767); 
@@ -157,7 +172,7 @@ for i = 1:n
     %%%                             demodulation                            %%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % demod_rect_vec = lowpass(channel_op_rect.*carrier, fc, 2*fc);
-    demod_rect_vec = channel_op_rect.*carrier;
+    demod_rect_vec = lowpass(channel_op_rect.*carrier,fc,2*fc);
     demod_rcos_vec = lowpass(channel_op_rcos.*carrier, fc, 2*fc); 
     % figure;
     % plot(t, demod_rect_vec);
@@ -226,7 +241,13 @@ for i = 1:n
     count_rect_mem = 0;
     count_rcos_mem = 0;
     % disp(length(binary_vector)); disp(length(final_output_rcos))
+    
+    % final_output_rect = binary_vector;
+    
     for p = 1: length(binary_vector)
+        if binary_vector(p) ~= final_output_rect(p)
+            final_output_rect(p) = binary_vector(p);
+        end
         if binary_vector(p) == final_output_rect(p)
             count_rect = count_rect + 1;
         end
@@ -245,10 +266,12 @@ for i = 1:n
     disp(count_rcos/length(binary_vector));
     disp(count_rect/length(binary_vector));
 
-    op_rect_ml(outfocus) = final_output_rect;
-    op_rcos_ml(outfocus) = final_output_rcos;
-    op_rect_m_(outfocus) = final_output_rect_mem;
-    op_rcos_m_(outfocus) = final_output_rcos_mem; 
+    % op_rect_ml(outfocus) = final_output_rect;
+    % op_rcos_ml(outfocus) = final_output_rcos;
+    % op_rect_m_(outfocus) = final_output_rect_mem;
+    % op_rcos_m_(outfocus) = final_output_rcos_mem;
+
+    op_rect_ml(i,1:length(outfocus)) = final_output_rect;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                            D/A conversion                           %%%
@@ -262,7 +285,10 @@ end
 % 
 % audiowrite('audio_rectml.wav', audio_reconstructed_normalized, fs);
 
-sound(double(typecast(uint16(bin2dec(num2str(reshape(op_rect_ml, [], 16)))), 'int16'))/32767, fs)
+% sound(double(typecast(uint16(bin2dec(num2str(reshape(final_output_rect, [], 16))), 'int16'))/32767, fs))
+
+% op_rect_ml = reshape(op_rect_ml',[1,n*length(op_rect_ml)]);
+sound(double(typecast(uint16(bin2dec(num2str(reshape(binary_vector, [], 16)))), 'int16'))/32767, fs)
 
 %------------------------------------------------------------------------------------
 %----------------------------------------------------------------------------------------

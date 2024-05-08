@@ -1,7 +1,7 @@
 function invector = fourpamunmapA(outvector,mode)
     l = length(outvector);
 
-    invector = "";
+    invector = '';
     if mode
         cutoff = [1.6 0.9 0];
     else
