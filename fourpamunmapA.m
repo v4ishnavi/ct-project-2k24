@@ -7,7 +7,7 @@ function invector = fourpamunmapA(outvector,mode)
     else
         cutoff = [4 2.5 1.1];
     end
-
+    
     for k = 0:2:l*2-1
 
         if outvector(k/2 + 1) >= cutoff(1)
