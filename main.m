@@ -7,10 +7,15 @@ clc;clear;close all;
 audio2 = audio1(:,1);
 % disp(length(audio));
 
-bl = 100000;
-n = floor(length(audio2)/bl);
-
-final_output = zeros(1,16*n*bl);
+bl = 100000; %block length
+n = floor(length(audio2)/bl); 
+%number of fullsize block lengths
+% bl = 100;
+% n = 1;
+op_rect_ml = zeros(1,16*n*bl); %16 for 16 binary bits?
+op_rcos_ml = zeros(1, 16*n*bl);
+op_rect_m_ = zeros(1, 16*n*bl);
+op_rcos_m_ = zeros(1, 16*n*bl);
 
 for i = 1:n
     
@@ -99,7 +104,7 @@ for i = 1:n
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%                                 channel                             %%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    snr_val = 100;
+    snr_val = 10000;
     % Channel memoryless: 
     % assume channel noise has SNR = 3
     channel_op_rcos = awgn(modulated_rcos_vec, snr_val);
@@ -151,14 +156,15 @@ for i = 1:n
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%                             demodulation                            %%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % demod_rect_vec = lowpass(channel_op_rect.*carrier, fc, 2*fc);
     demod_rect_vec = channel_op_rect.*carrier;
-    demod_rcos_vec = channel_op_rcos.*carrier; 
+    demod_rcos_vec = lowpass(channel_op_rcos.*carrier, fc, 2*fc); 
     % figure;
     % plot(t, demod_rect_vec);
     % plot(t, demod_rcos_vec);
     
-    demod_rect_vec_mem = chmo_rect.*carrier;
-    demod_rcos_vec_mem = chmo_rcos.*carrier;
+    demod_rect_vec_mem = lowpass(chmo_rect.*carrier, fc, 2*fc);
+    demod_rcos_vec_mem = lowpass(chmo_rcos.*carrier, fc, 2*fc);
     
     
     %----------------------------------------------------------------------------------
@@ -199,9 +205,9 @@ for i = 1:n
     decoded_rect_mem = (line_decoded_rect_vec_mem);
     decoded_downsample_rect_mem = downsample(decoded_rect_mem,m);
     
-    
-    figure;
-    stem(real(decoded_downsample_rect_mem),imag(decoded_downsample_rect_mem));
+    % 
+    % figure;
+    % stem(real(decoded_downsample_rect_mem),imag(decoded_downsample_rect_mem));
     
     decoded_rcos_mem = (line_decoded_rcos_vec_mem);
     decoded_downsample_rcos_mem = downsample(decoded_rcos_mem,m);
@@ -239,10 +245,24 @@ for i = 1:n
     disp(count_rcos/length(binary_vector));
     disp(count_rect/length(binary_vector));
 
-    final_output(outfocus) = final_output_rect;
+    op_rect_ml(outfocus) = final_output_rect;
+    op_rcos_ml(outfocus) = final_output_rcos;
+    op_rect_m_(outfocus) = final_output_rect_mem;
+    op_rcos_m_(outfocus) = final_output_rcos_mem; 
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                            D/A conversion                           %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% disp(op_rcos_m_);
 
+% binary_matrix = num2str(reshape(op_rect_ml, [], 16));
+% audio_integers = bin2dec(binary_matrix); 
+% audio_reconstructed = typecast(uint16(audio_integers), 'int16'); 
+% audio_reconstructed_normalized = double(audio_reconstructed) / 32767; 
+% 
+% audiowrite('audio_rectml.wav', audio_reconstructed_normalized, fs);
 
+sound(double(typecast(uint16(bin2dec(num2str(reshape(op_rect_ml, [], 16)))), 'int16'))/32767, fs)
 
 %------------------------------------------------------------------------------------
 %----------------------------------------------------------------------------------------
