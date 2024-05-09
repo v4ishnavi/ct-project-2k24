@@ -51,7 +51,7 @@ for i = 1:n
     %%%                             encoding                                %%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     l = length(binary_vector);
-    k_rcos = 6; 
+    k_rcos = 8; 
     k_rect = 6;
     m = 4;
     
@@ -198,7 +198,7 @@ for i = 1:n
     % plot(line_decoded_rcos_vec);
     
     line_decoded_rect_vec_mem = conv(demod_rect_vec_mem,p1,'same');
-    line_decoded_rcos_vec_mem = conv(demod_rect_vec_mem,p2,'same');
+    line_decoded_rcos_vec_mem = conv(demod_rcos_vec_mem,p2,'same');
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%                            4PAM decoding                            %%%
