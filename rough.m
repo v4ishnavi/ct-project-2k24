@@ -4,12 +4,18 @@ clc;clear;close all;
 
 % This is the A/D converter, completely copied honestly
 
-audio2 = audio1(:,1);
+audio2 = audio1(:,2);
 % disp(length(audio));
 
+<<<<<<< HEAD:main.asv
+bl = 1000000; %block length
+n = ceil(length(audio2)/bl);
+% n = 5;
+=======
 bl = 100000; %block length
 % n = ceil(length(audio2)/bl);
 n = 5;
+>>>>>>> 1ec08f7c55e6c40f65b260c5d16b2394de004c91:rough.m
 %number of fullsize block lengths
 % bl = 100;
 % n = 1;
@@ -213,6 +219,114 @@ for i = 1:n
     
     decoded_rcos_mem = (line_decoded_rcos_vec_mem);
     decoded_downsample_rcos_mem = downsample(decoded_rcos_mem,m);
+<<<<<<< HEAD:main.asv
+    
+    % figure;
+    % stem(real(decoded_downsample_rcos_mem),imag(decoded_downsample_rcos_mem));
+    
+    final_output_rect = fourpamunmapA(decoded_downsample_rect,0);
+    final_output_rcos = fourpamunmapA(decoded_downsample_rcos,0);
+    
+    final_output_rect_mem = fourpamunmapA(decoded_downsample_rect_mem,1);
+    final_output_rcos_mem = fourpamunmapA(decoded_downsample_rcos_mem,1);
+    
+    count_rect = 0; 
+    count_rcos = 0; 
+    count_rect_mem = 0;
+    count_rcos_mem = 0;
+    % disp(length(binary_vector)); disp(length(final_output_rcos))
+    
+    % final_output_rect = binary_vector;
+    
+    for p = 1: length(binary_vector)
+        % if binary_vector(p) ~= final_output_rect(p)
+        %     final_output_rect(p) = binary_vector(p);
+        % end
+        if binary_vector(p) == final_output_rect(p)
+            count_rect = count_rect + 1;
+        end
+        if binary_vector(p) == final_output_rcos(p)
+            count_rcos = count_rcos + 1;
+        end
+        if binary_vector(p) == final_output_rect_mem(p)
+            count_rect_mem = count_rect_mem + 1;
+        end
+        if binary_vector(p) == final_output_rcos_mem(p)
+            count_rcos_mem = count_rcos_mem + 1;
+        end
+    end
+    disp(count_rcos_mem/length(binary_vector))
+    disp(count_rect_mem/length(binary_vector))
+    disp(count_rcos/length(binary_vector));
+    disp(count_rect/length(binary_vector));
+
+    % op_rect_ml(outfocus) = final_output_rect;
+    % op_rcos_ml(outfocus) = final_output_rcos;
+    % op_rect_m_(outfocus) = final_output_rect_mem;
+    % op_rcos_m_(outfocus) = final_output_rcos_mem;
+
+    op_rect_ml(i,1:length(binary_vector)) = final_output_rect;
+    op_rcos_ml(i,1:length(binary_vector)) = final_output_rcos;
+    op_rect_m_(i,1:length(binary_vector)) = final_output_rect_mem;
+    op_rcos_m_(i,1:length(binary_vector)) = final_output_rcos_mem;
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                            D/A conversion                           %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% disp(op_rcos_m_);
+
+% binary_matrix = num2str(reshape(op_rect_ml, [], 16));
+% audio_integers = bin2dec(binary_matrix); 
+% audio_reconstructed = typecast(uint16(audio_integers), 'int16'); 
+% audio_reconstructed_normalized = double(audio_reconstructed) / 32767; 
+% 
+% audiowrite('audio_rectml.wav', audio_reconstructed_normalized, fs);
+
+% sound(double(typecast(uint16(bin2dec(num2str(reshape(final_output_rect, [], 16))), 'int16'))/32767, fs))
+
+% for l = 1:n
+%     op_rect_ml = 
+% end
+
+% op_rect_ml = reshape(op_rect_ml',[1,n*length(op_rect_ml)]);
+sound(double(typecast(uint16(bin2dec(num2str(reshape(op_rcos_m_, [], 16)))), 'int16'))/32767, fs)
+
+%------------------------------------------------------------------------------------
+%----------------------------------------------------------------------------------------
+%This section is just to check stuff/ ignore unless curious
+% plot(modulated_rect_vec);
+% hold off;
+% subplot(2,1,1)
+% plot(modulated_rcos_vec);
+% subplot(2,1,2)
+% hold on;
+% plot(line_vector_rect);
+% % ts = 1/fs;
+% upsample_factor = fs;
+% % 
+% t = 1/m:1/m:length(symbols_vector);
+% t = linspace(1, len_ip, len_ip * upsample_factor);
+% lv_rect_upsampled = interp1(1:len_ip, line_vector_rect, t, 'linear');
+% lv_rcos_upsampled = interp1(1:len_ip, line_vector_rcos, t, 'linear');
+% len_up = length(lv_rect_upsampled);
+% modulation failures 
+% line_vector_rect = repelem(line_vector_rect, fs);
+% line_vector_rcos = repelem(line_vector_rcos, fs); %i think we need to upsample this using linear upsampling. 
+% disp(length(line_vector_rcos)); disp(length(line_vector_rect)); disp(length(carrier));
+% 
+% binary_vectorA = fourpamunmapA(symbols_vector);
+% 
+% binary_matrix = reshape(binary_vectorA, [], 16);
+% audio_integers = bin2dec(binary_matrix); 
+% audio_reconstructed = typecast(uint16(audio_integers), 'int16'); 
+% audio_reconstructed_normalized = double(audio_reconstructed) / 32767; 
+% 
+% audiowrite('reconstructed_project.wav', audio_reconstructed_normalized, fs);
+% % 
+% sound(audio1, fs); 
+% pause(length(audio)/fs + 1);
+% sound(audio_reconstructed_normalized, fs);
+=======
     nc = 3;
     X = zeros(length(decoded_downsample_rect),nc);
     X(:, 1) = decoded_downsample_rect;
@@ -228,3 +342,4 @@ for i = 1:n
     % final_output_rect_mem = fourpamunmapA(decoded_downsample_rect_mem,1);
     % final_output_rcos_mem = fourpamunmapA(decoded_downsample_rcos_mem,1);
 end
+>>>>>>> 1ec08f7c55e6c40f65b260c5d16b2394de004c91:rough.m
