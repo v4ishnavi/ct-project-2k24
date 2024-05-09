@@ -6,7 +6,7 @@ if isrow(X)
     X = X';
 end
 threshold = zeros(1, nc);
-[~, C] = kmeans(X, nc);
+[~, C] = kmeans(X, nc, 'Distance','cityblock');
 disp(C)
 for p = 1:nc
 threshold(p) = C(p,1);

@@ -232,11 +232,11 @@ for i = 1:n
     % figure;
     % stem(real(decoded_downsample_rcos_mem),imag(decoded_downsample_rcos_mem));
     
-    final_output_rect = fourpamunmapA(decoded_downsample_rect,1);
-    final_output_rcos = fourpamunmapA(decoded_downsample_rcos,0);
+    final_output_rect = fourpamunmapA(decoded_downsample_rect,0);
+    final_output_rcos = fourpamunmapA(decoded_downsample_rcos,1);
     
-    final_output_rect_mem = fourpamunmapA(decoded_downsample_rect_mem,0);
-    final_output_rcos_mem = fourpamunmapA(decoded_downsample_rcos_mem,0);
+    final_output_rect_mem = fourpamunmapA(decoded_downsample_rect_mem,2);
+    final_output_rcos_mem = fourpamunmapA(decoded_downsample_rcos_mem,3);
     
     count_rect = 0; 
     count_rcos = 0; 
