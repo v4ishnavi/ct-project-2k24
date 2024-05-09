@@ -119,9 +119,13 @@ for i = 1:n
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%                                 channel                             %%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    snr_val = 20;
+    snr_val = 100;
     % Channel memoryless: 
     % assume channel noise has SNR = 3
+
+    power_rect = pow2db(mean(abs([0 1 2 3]).^2)*norm(p1.^2));
+    power_rcos = pow2db(mean(abs([0 1 2 3]).^2)*norm(p2.^2));
+
     channel_op_rcos = awgn(modulated_rcos_vec, snr_val);
     channel_op_rect = awgn(modulated_rect_vec, snr_val); 
     % figure; 
@@ -180,9 +184,16 @@ for i = 1:n
     % plot(t, demod_rect_vec);
     % plot(t, demod_rcos_vec);
     
-    demod_rect_vec_mem = lowpass(chmo_rect.*carrier, fc, 2*fc+1);
-    demod_rcos_vec_mem = lowpass(chmo_rcos.*carrier, fc, 2*fc+1);
-   
+    demod_rect_vec_mem_pre = lowpass(chmo_rect.*carrier, fc, 2*fc+1);
+    demod_rcos_vec_mem_pre = lowpass(chmo_rcos.*carrier, fc, 2*fc+1);
+
+    num = 1;
+    den = zeros(1,length(t_h));
+    den(1) = a;
+    den(b+1) = 1-a;
+    
+    demod_rect_vec_mem = filter(num,den,demod_rect_vec_mem_pre);
+    demod_rcos_vec_mem = filter(num,den,demod_rcos_vec_mem_pre);
     
     %----------------------------------------------------------------------------------
     
@@ -232,11 +243,11 @@ for i = 1:n
     % figure;
     % stem(real(decoded_downsample_rcos_mem),imag(decoded_downsample_rcos_mem));
     
-    final_output_rect = fourpamunmapA(decoded_downsample_rect,0);
-    final_output_rcos = fourpamunmapA(decoded_downsample_rcos,1);
+    final_output_rect = fourpamunmapA(decoded_downsample_rect,1);
+    final_output_rcos = fourpamunmapA(decoded_downsample_rcos,0);
     
-    final_output_rect_mem = fourpamunmapA(decoded_downsample_rect_mem,2);
-    final_output_rcos_mem = fourpamunmapA(decoded_downsample_rcos_mem,3);
+    final_output_rect_mem = fourpamunmapA(decoded_downsample_rect_mem,0);
+    final_output_rcos_mem = fourpamunmapA(decoded_downsample_rcos_mem,0);
     
     count_rect = 0; 
     count_rcos = 0; 

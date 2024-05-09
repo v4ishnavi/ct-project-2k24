@@ -2,9 +2,8 @@ clc;clear;close all;
 %A/D Conversion
 [audio1, fs] = audioread('project.wav');
 
-% This is the A/D converter, completely copied honestly
 
-audio2 = audio1(:,2);
+audio2 = audio1(:,1);
 % disp(length(audio));
 
 bl = 1000000; %block length
@@ -119,9 +118,13 @@ for i = 1:n
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%                                 channel                             %%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    snr_val = 20;
+    snr_val = 100;
     % Channel memoryless: 
     % assume channel noise has SNR = 3
+
+    power_rect = pow2db(mean(abs([0 1 2 3]).^2)*norm(p1.^2));
+    power_rcos = pow2db(mean(abs([0 1 2 3]).^2)*norm(p2.^2));
+
     channel_op_rcos = awgn(modulated_rcos_vec, snr_val);
     channel_op_rect = awgn(modulated_rect_vec, snr_val); 
     % figure; 
@@ -182,7 +185,14 @@ for i = 1:n
     
     demod_rect_vec_mem = lowpass(chmo_rect.*carrier, fc, 2*fc+1);
     demod_rcos_vec_mem = lowpass(chmo_rcos.*carrier, fc, 2*fc+1);
-   
+
+    num = 1;
+    den = zeros(1,length(t_h));
+    den(1) = a;
+    den(b+1) = 1-a;
+    
+    % demod_rect_vec_mem = filter(num,den,demod_rect_vec_mem_pre);
+    % demod_rcos_vec_mem = filter(num,den,demod_rcos_vec_mem_pre);
     
     %----------------------------------------------------------------------------------
     
