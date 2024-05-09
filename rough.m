@@ -7,7 +7,7 @@ clc;clear;close all;
 audio2 = audio1(:,2);
 % disp(length(audio));
 
-<<<<<<< HEAD:main.asv
+% <<<<<<< HEAD:main.asv
 bl = 1000000; %block length
 n = ceil(length(audio2)/bl);
 % n = 5;
@@ -15,7 +15,7 @@ n = ceil(length(audio2)/bl);
 bl = 100000; %block length
 % n = ceil(length(audio2)/bl);
 n = 5;
->>>>>>> 1ec08f7c55e6c40f65b260c5d16b2394de004c91:rough.m
+% >>>>>>> 1ec08f7c55e6c40f65b260c5d16b2394de004c91:rough.m
 %number of fullsize block lengths
 % bl = 100;
 % n = 1;
