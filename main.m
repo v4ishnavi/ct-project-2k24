@@ -4,12 +4,12 @@ clc;clear;close all;
 
 % This is the A/D converter, completely copied honestly
 
-audio2 = audio1(:,1);
+audio2 = audio1(:,2);
 % disp(length(audio));
 
-bl = 100000; %block length
-% n = ceil(length(audio2)/bl);
-n = 5;
+bl = 1000000; %block length
+n = ceil(length(audio2)/bl);
+% n = 5;
 %number of fullsize block lengths
 % bl = 100;
 % n = 1;
@@ -245,9 +245,9 @@ for i = 1:n
     % final_output_rect = binary_vector;
     
     for p = 1: length(binary_vector)
-        if binary_vector(p) ~= final_output_rect(p)
-            final_output_rect(p) = binary_vector(p);
-        end
+        % if binary_vector(p) ~= final_output_rect(p)
+        %     final_output_rect(p) = binary_vector(p);
+        % end
         if binary_vector(p) == final_output_rect(p)
             count_rect = count_rect + 1;
         end
@@ -271,7 +271,10 @@ for i = 1:n
     % op_rect_m_(outfocus) = final_output_rect_mem;
     % op_rcos_m_(outfocus) = final_output_rcos_mem;
 
-    op_rect_ml(i,1:length(outfocus)) = final_output_rect;
+    op_rect_ml(i,1:length(binary_vector)) = final_output_rect;
+    op_rcos_ml(i,1:length(binary_vector)) = final_output_rcos;
+    op_rect_m_(i,1:length(binary_vector)) = final_output_rect_mem;
+    op_rcos_m_(i,1:length(binary_vector)) = final_output_rcos_mem;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                            D/A conversion                           %%%
@@ -287,8 +290,12 @@ end
 
 % sound(double(typecast(uint16(bin2dec(num2str(reshape(final_output_rect, [], 16))), 'int16'))/32767, fs))
 
+% for l = 1:n
+%     op_rect_ml = 
+% end
+
 % op_rect_ml = reshape(op_rect_ml',[1,n*length(op_rect_ml)]);
-sound(double(typecast(uint16(bin2dec(num2str(reshape(binary_vector, [], 16)))), 'int16'))/32767, fs)
+sound(double(typecast(uint16(bin2dec(num2str(reshape(op_rcos_m_, [], 16)))), 'int16'))/32767, fs)
 
 %------------------------------------------------------------------------------------
 %----------------------------------------------------------------------------------------
