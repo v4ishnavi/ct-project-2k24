@@ -7,9 +7,15 @@ clc;clear;close all;
 audio2 = audio1(:,2);
 % disp(length(audio));
 
+<<<<<<< HEAD:main.asv
 bl = 1000000; %block length
 n = ceil(length(audio2)/bl);
 % n = 5;
+=======
+bl = 100000; %block length
+% n = ceil(length(audio2)/bl);
+n = 5;
+>>>>>>> 1ec08f7c55e6c40f65b260c5d16b2394de004c91:rough.m
 %number of fullsize block lengths
 % bl = 100;
 % n = 1;
@@ -199,33 +205,21 @@ for i = 1:n
     
     line_decoded_rect_vec_mem = conv(demod_rect_vec_mem,p1,'same');
     line_decoded_rcos_vec_mem = conv(demod_rect_vec_mem,p2,'same');
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%                            4PAM decoding                            %%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     decoded_rect = (line_decoded_rect_vec);
     decoded_downsample_rect = downsample(decoded_rect, m);
-    
-    % figure;
-    % stem(real(decoded_downsample_rect),imag(decoded_downsample_rect));
-    
+
     decoded_rcos = (line_decoded_rcos_vec);
     decoded_downsample_rcos = downsample(decoded_rcos, m);
-    
-    
-    % figure;
-    % stem(real(decoded_downsample_rcos),imag(decoded_downsample_rcos));
-    
     
     decoded_rect_mem = (line_decoded_rect_vec_mem);
     decoded_downsample_rect_mem = downsample(decoded_rect_mem,m);
     
-    % 
-    % figure;
-    % stem(real(decoded_downsample_rect_mem),imag(decoded_downsample_rect_mem));
-    
     decoded_rcos_mem = (line_decoded_rcos_vec_mem);
     decoded_downsample_rcos_mem = downsample(decoded_rcos_mem,m);
+<<<<<<< HEAD:main.asv
     
     % figure;
     % stem(real(decoded_downsample_rcos_mem),imag(decoded_downsample_rcos_mem));
@@ -332,3 +326,20 @@ sound(double(typecast(uint16(bin2dec(num2str(reshape(op_rcos_m_, [], 16)))), 'in
 % sound(audio1, fs); 
 % pause(length(audio)/fs + 1);
 % sound(audio_reconstructed_normalized, fs);
+=======
+    nc = 3;
+    X = zeros(length(decoded_downsample_rect),nc);
+    X(:, 1) = decoded_downsample_rect;
+    if i == 1
+        stem(decoded_downsample_rect);
+    end
+    disp(decoded_downsample_rect(1:100))
+    threshold = iterative_threshold(X,nc);
+    disp(threshold)
+    % final_output_rect = fourpamunmapA(decoded_downsample_rect,0);
+    % final_output_rcos = fourpamunmapA(decoded_downsample_rcos,0);
+    % 
+    % final_output_rect_mem = fourpamunmapA(decoded_downsample_rect_mem,1);
+    % final_output_rcos_mem = fourpamunmapA(decoded_downsample_rcos_mem,1);
+end
+>>>>>>> 1ec08f7c55e6c40f65b260c5d16b2394de004c91:rough.m
